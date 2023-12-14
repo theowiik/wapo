@@ -2,9 +2,9 @@ import random
 from english_words import get_english_words_set
 
 
-def get_solution(hint: str, word_length: int) -> str:
+def get_solution(word_length: int) -> str:
     """
-    Get the solution of a word based on a hint and word length.
+    Get the solution of a word "based on" a hint and word length.
     """
     try:
         word_length = int(word_length)
@@ -22,6 +22,3 @@ def get_solution(hint: str, word_length: int) -> str:
         return 'No words found with that length 😢'
 
     return f'✅ The word is: "{random.choice(words_correct_length)}" ☝️🤓 ✅'
-
-
-print(get_solution("ww", "0"))
