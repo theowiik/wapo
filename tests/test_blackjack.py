@@ -1,5 +1,6 @@
 import unittest
-from src.blackjack.blackjack import Card, Deck, Blackjack, Suite
+from src.blackjack.blackjack import Card, Deck, Blackjack, InvalidMove, Suite
+
 
 class TestCard(unittest.TestCase):
     def test_error_on_invalid_suit_creation(self):
@@ -20,6 +21,7 @@ class TestCard(unittest.TestCase):
         card = Card(Suite.HEARTS, "10")
         self.assertEqual(str(card), "10 of Hearts")
 
+
 class TestDeck(unittest.TestCase):
     def test_error_when_drawing_from_empty_deck(self):
         deck = Deck()
@@ -33,18 +35,28 @@ class TestDeck(unittest.TestCase):
         deck.shuffle()
         self.assertNotEqual(before_shuffle, deck._cards)
 
+
 class TestBlackjack(unittest.TestCase):
     def setUp(self):
         self.game = Blackjack()
 
     def test_error_when_hitting_after_bust(self):
         self.game._deal_cards()
-        self.game.player_hand = [Card(Suite.HEARTS, "10"), Card(Suite.SPADES, "J"), Card(Suite.CLUBS, "5")]
-        with self.assertRaises(RuntimeError):
+        self.game.player_hand = [
+            Card(Suite.HEARTS, "10"),
+            Card(Suite.SPADES, "J"),
+            Card(Suite.CLUBS, "5"),
+        ]
+        with self.assertRaises(InvalidMove):
             self.game.hit(self.game.player_hand)
 
     def test_bust_scenario_with_aces_in_hand(self):
-        self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J"), Card(Suite.CLUBS, "A"), Card(Suite.DIAMONDS, "8")]
+        self.game.player_hand = [
+            Card(Suite.HEARTS, "A"),
+            Card(Suite.SPADES, "J"),
+            Card(Suite.CLUBS, "A"),
+            Card(Suite.DIAMONDS, "8"),
+        ]
         score = self.game._calculate_score(self.game.player_hand)
         self.assertTrue(self.game._is_bust(score))
 
@@ -63,6 +75,88 @@ class TestBlackjack(unittest.TestCase):
         self.game.dealer_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "6")]
         self.game._dealer_play()
         self.assertGreater(len(self.game.dealer_hand), 2)
+
+    def test_ensure_start_game_before_hit(self):
+        with self.assertRaises(InvalidMove):
+            self.game.hit(self.game.player_hand)
+
+    def test_ensure_start_game_before_stand(self):
+        with self.assertRaises(InvalidMove):
+            self.game.stand()
+
+    def test_cant_hit_after_stand(self):
+        self.game.deal_cards()
+        self.game.stand()
+        with self.assertRaises(InvalidMove):
+            self.game.hit(self.game.player_hand)
+
+    def test_cant_stand_after_stand(self):
+        self.game.deal_cards()
+        self.game.stand()
+        with self.assertRaises(InvalidMove):
+            self.game.stand()
+
+    def test_cant_deal_cards_after_stand(self):
+        self.game.deal_cards()
+        self.game.stand()
+        with self.assertRaises(InvalidMove):
+            self.game._deal_cards()
+
+    def test_cant_deal_cards_after_bust(self):
+        self.game.deal_cards()
+        self.game.player_hand = [
+            Card(Suite.HEARTS, "10"),
+            Card(Suite.SPADES, "J"),
+            Card(Suite.CLUBS, "5"),
+        ]
+        with self.assertRaises(InvalidMove):
+            self.game._deal_cards()
+
+    def test_cant_hit_after_bust(self):
+        self.game.deal_cards()
+        self.game.player_hand = [
+            Card(Suite.HEARTS, "10"),
+            Card(Suite.SPADES, "J"),
+            Card(Suite.CLUBS, "5"),
+        ]
+        with self.assertRaises(InvalidMove):
+            self.game.hit(self.game.player_hand)
+
+    def test_cant_stand_after_bust(self):
+        self.game.deal_cards()
+        self.game.player_hand = [
+            Card(Suite.HEARTS, "10"),
+            Card(Suite.SPADES, "J"),
+            Card(Suite.CLUBS, "5"),
+        ]
+        with self.assertRaises(InvalidMove):
+            self.game.stand()
+
+    def test_cant_hit_after_blackjack(self):
+        self.game.deal_cards()
+        self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
+        with self.assertRaises(InvalidMove):
+            self.game.hit(self.game.player_hand)
+
+    def test_cant_stand_after_blackjack(self):
+        self.game._deal_cards()
+        self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
+        with self.assertRaises(InvalidMove):
+            self.game.stand()
+
+    def test_cant_deal_cards_after_blackjack(self):
+        self.game.deal_cards()
+        self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
+        with self.assertRaises(InvalidMove):
+            self.game._deal_cards()
+
+    def test_cant_hit_after_dealer_stand(self):
+        self.game.deal_cards()
+        self.game.dealer_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
+        self.game._dealer_play()
+        with self.assertRaises(InvalidMove):
+            self.game.hit(self.game.player_hand)
+
 
 if __name__ == "__main__":
     unittest.main()
