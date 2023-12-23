@@ -5,6 +5,7 @@ def play():
     blackjack: Blackjack = Blackjack()
     blackjack.deal_cards()
     print(blackjack.display())
+    print("\n\n\n")
 
     while True:
         choice = input("Hit or stand? (h/s): ").lower()
@@ -12,6 +13,7 @@ def play():
         if choice == "h":
             blackjack.player_hit()
             print(blackjack.display())
+            print("\n\n\n")
 
             if blackjack.player_is_bust():
                 break
@@ -24,6 +26,7 @@ def play():
             print("Invalid choice. Try again.")
 
     print(blackjack.display())
+    print("\n\n\n")
 
 
 if __name__ == "__main__":

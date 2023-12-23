@@ -106,7 +106,7 @@ class TestBlackjackGameFlow(unittest.TestCase):
         self.game.deal_cards()
         self.game.player_stand()
         with self.assertRaises(InvalidMove):
-            self.game._deal_cards()
+            self.game.deal_cards()
 
 class TestBlackjackInvalidOperations(unittest.TestCase):
     # Tests for invalid operations in different game states

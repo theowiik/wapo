@@ -111,8 +111,8 @@ class Blackjack:
 
     def display(self) -> str:
         """Gets a string representing the current state of the game."""
-        dealer_cards = ", ".join(str(card) for card in self.dealer_hand)
-        player_cards = ", ".join(str(card) for card in self.player_hand)
+        dealer_cards = ", ".join(str(card).split(" ")[0] for card in self.dealer_hand)
+        player_cards = ", ".join(str(card).split(" ")[0] for card in self.player_hand)
         dealer_score = self._calculate_score(self.dealer_hand)
         player_score = self._calculate_score(self.player_hand)
 
@@ -130,6 +130,9 @@ class Blackjack:
 
     def player_hit(self) -> None:
         self._hit_hand(self.player_hand)
+
+        if self.player_is_bust():
+            self._game_state = GameState.DEALER_WON
 
     def _hand_is_bust(self, hand: list[Card]) -> bool:
         """Returns True if the score is over 21, else False."""
