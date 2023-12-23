@@ -1,5 +1,5 @@
 import unittest
-from src.blackjack.blackjack import Card, Deck, Blackjack, InvalidMove, Suite
+from src.blackjack.blackjack_core import Card, Deck, Blackjack, InvalidMove, Suite
 
 
 class TestCard(unittest.TestCase):
@@ -48,7 +48,7 @@ class TestBlackjack(unittest.TestCase):
             Card(Suite.CLUBS, "5"),
         ]
         with self.assertRaises(InvalidMove):
-            self.game.hit(self.game.player_hand)
+            self.game._hit_hand(self.game.player_hand)
 
     def test_bust_scenario_with_aces_in_hand(self):
         self.game.player_hand = [
@@ -78,27 +78,27 @@ class TestBlackjack(unittest.TestCase):
 
     def test_ensure_start_game_before_hit(self):
         with self.assertRaises(InvalidMove):
-            self.game.hit(self.game.player_hand)
+            self.game._hit_hand(self.game.player_hand)
 
     def test_ensure_start_game_before_stand(self):
         with self.assertRaises(InvalidMove):
-            self.game.stand()
+            self.game.player_stand()
 
     def test_cant_hit_after_stand(self):
         self.game.deal_cards()
-        self.game.stand()
+        self.game.player_stand()
         with self.assertRaises(InvalidMove):
-            self.game.hit(self.game.player_hand)
+            self.game._hit_hand(self.game.player_hand)
 
     def test_cant_stand_after_stand(self):
         self.game.deal_cards()
-        self.game.stand()
+        self.game.player_stand()
         with self.assertRaises(InvalidMove):
-            self.game.stand()
+            self.game.player_stand()
 
     def test_cant_deal_cards_after_stand(self):
         self.game.deal_cards()
-        self.game.stand()
+        self.game.player_stand()
         with self.assertRaises(InvalidMove):
             self.game._deal_cards()
 
@@ -120,7 +120,7 @@ class TestBlackjack(unittest.TestCase):
             Card(Suite.CLUBS, "5"),
         ]
         with self.assertRaises(InvalidMove):
-            self.game.hit(self.game.player_hand)
+            self.game._hit_hand(self.game.player_hand)
 
     def test_cant_stand_after_bust(self):
         self.game.deal_cards()
@@ -130,19 +130,19 @@ class TestBlackjack(unittest.TestCase):
             Card(Suite.CLUBS, "5"),
         ]
         with self.assertRaises(InvalidMove):
-            self.game.stand()
+            self.game.player_stand()
 
     def test_cant_hit_after_blackjack(self):
         self.game.deal_cards()
         self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
         with self.assertRaises(InvalidMove):
-            self.game.hit(self.game.player_hand)
+            self.game._hit_hand(self.game.player_hand)
 
     def test_cant_stand_after_blackjack(self):
         self.game._deal_cards()
         self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
         with self.assertRaises(InvalidMove):
-            self.game.stand()
+            self.game.player_stand()
 
     def test_cant_deal_cards_after_blackjack(self):
         self.game.deal_cards()
@@ -155,7 +155,7 @@ class TestBlackjack(unittest.TestCase):
         self.game.dealer_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
         self.game._dealer_play()
         with self.assertRaises(InvalidMove):
-            self.game.hit(self.game.player_hand)
+            self.game._hit_hand(self.game.player_hand)
 
 
 if __name__ == "__main__":

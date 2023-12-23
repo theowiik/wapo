@@ -66,11 +66,18 @@ class InvalidMove(Exception):
     pass
 
 
+class GameState(Enum):
+    IN_PROGRESS = "IN_PROGRESS"
+    PLAYER_WON = "PLAYER_WON"
+    DEALER_WON = "DEALER_WON"
+    DRAW = "DRAW"
+
+
 class Blackjack:
     """Represents a game of Blackjack."""
 
     _has_dealt_cards: bool = False
-    _game_finished: bool = False
+    _game_state: GameState = GameState.IN_PROGRESS
 
     def __init__(self) -> None:
         self._deck: Deck = Deck()
@@ -82,33 +89,28 @@ class Blackjack:
         if self._has_dealt_cards:
             raise InvalidMove("Cards have already been dealt")
 
+        if self._game_state != GameState.IN_PROGRESS:
+            raise InvalidMove("Game has already finished")
+
         self._has_dealt_cards = True
 
         for _ in range(2):
             self.player_hand.append(self._deck.draw_card())
             self.dealer_hand.append(self._deck.draw_card())
 
-    def hit(self) -> None:
-        """Adds a card to the given hand."""
-
-        if self._game_finished:
-            raise InvalidMove("Game has already finished")
-
-        if not self._has_dealt_cards:
-            raise InvalidMove("Game has not started, initial cards needs to be dealt")
-
-        self.player_hand.append(self._deck.draw_card())
-
-    def stand(self) -> Tuple[str, int, int]:
-        """Player decides to stand, and the dealer plays its turn."""
+    def player_stand(self) -> None:
+        """Player decides to stand, finishing their turn and the dealer plays its turn."""
 
         if not self._has_dealt_cards:
             raise RuntimeError("Game has not started, initial cards needs to be dealt")
 
-        return self._play_dealer_turn()
+        if self._game_state != GameState.IN_PROGRESS:
+            raise InvalidMove("Game has already finished")
+
+        self._play_dealer_turn()
 
     def display(self) -> str:
-        """Displays the current state of the game using PrettyTable."""
+        """Gets a string representing the current state of the game."""
         dealer_cards = ", ".join(str(card) for card in self.dealer_hand)
         player_cards = ", ".join(str(card) for card in self.player_hand)
         dealer_score = self._calculate_score(self.dealer_hand)
@@ -117,13 +119,32 @@ class Blackjack:
         table = PrettyTable()
         table.field_names = ["Player", "Score", "Cards"]
         table.add_row(["Dealer", dealer_score, dealer_cards])
-        table.add_row(["Player", f"->{player_score}<-", player_cards])
+        table.add_row(["Player", f"-->{player_score}<--", player_cards])
 
-        return f"{'Game finished' if self._game_finished else 'Game in progress'}\n\n{table}"
+        status_str = self._game_state.value.replace("_", " ").title()
+        return f"||{status_str}||\n\n{table}"
 
-    def _is_bust(self, score: int) -> bool:
+    def player_is_bust(self) -> bool:
+        """Returns True if the player is bust, else False."""
+        return self._hand_is_bust(self.player_hand)
+
+    def player_hit(self) -> None:
+        self._hit_hand(self.player_hand)
+
+    def _hand_is_bust(self, hand: list[Card]) -> bool:
         """Returns True if the score is over 21, else False."""
-        return score > 21
+        return self._calculate_score(hand) > 21
+
+    def _hit_hand(self, hand: list[Card]) -> None:
+        """Adds a card to the given hand."""
+
+        if self._game_state != GameState.IN_PROGRESS:
+            raise InvalidMove("Game has already finished")
+
+        if not self._has_dealt_cards:
+            raise InvalidMove("Game has not started, initial cards needs to be dealt")
+
+        hand.append(self._deck.draw_card())
 
     def _calculate_score(self, hand: List[Card]) -> int:
         """Calculates and returns the score of a hand."""
@@ -144,22 +165,33 @@ class Blackjack:
 
         return score
 
-    def _play_dealer_turn(self) -> Tuple[str, int, int]:
+    def _play_dealer_turn(self) -> None:
         """Executes the dealer's turn after the player stands."""
-        player_score = self._calculate_score(self.player_hand)
+
+        if self._game_state != GameState.IN_PROGRESS:
+            raise InvalidMove("Game has already finished")
+
         dealer_score = self._calculate_score(self.dealer_hand)
 
         # Dealer's turn
         while dealer_score < 17:
-            self.hit(self.dealer_hand)
+            self._hit_hand(self.dealer_hand)
             dealer_score = self._calculate_score(self.dealer_hand)
 
-        if self._is_bust(dealer_score):
-            return "Dealer busts", player_score, dealer_score
+        player_score = self._calculate_score(self.player_hand)
 
-        if player_score > dealer_score:
-            return "Player wins", player_score, dealer_score
-        elif player_score < dealer_score:
-            return "Dealer wins", player_score, dealer_score
+        if player_score > 21:
+            # Player is bust
+            self._game_state = GameState.DEALER_WON
+        elif dealer_score > 21:
+            # Dealer is bust
+            self._game_state = GameState.PLAYER_WON
+        elif dealer_score > player_score:
+            # Dealer has higher score than player
+            self._game_state = GameState.DEALER_WON
+        elif dealer_score < player_score:
+            # Player has higher score than dealer
+            self._game_state = GameState.PLAYER_WON
         else:
-            return "It's a tie", player_score, dealer_score
+            # Draw
+            self._game_state = GameState.DRAW

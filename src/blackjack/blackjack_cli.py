@@ -1,4 +1,4 @@
-from blackjack import Blackjack
+from blackjack_core import Blackjack
 
 
 def play():
@@ -10,20 +10,20 @@ def play():
         choice = input("Hit or stand? (h/s): ").lower()
 
         if choice == "h":
-            blackjack.hit()
+            blackjack.player_hit()
             print(blackjack.display())
 
-            if blackjack.is_bust():
-                print("You bust!")
+            if blackjack.player_is_bust():
                 break
 
         elif choice == "s":
-            result = blackjack.stand()
-            print(f"{result[0]}! Your score: {result[1]}. Dealer score: {result[2]}.")
+            blackjack.player_stand()
             break
 
         else:
             print("Invalid choice. Try again.")
+
+    print(blackjack.display())
 
 
 if __name__ == "__main__":
