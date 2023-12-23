@@ -1,15 +1,19 @@
-# PURE MODEL
-# ONE INSTANCE = ONE GAME
-# ONE PLAYER
-
+from enum import Enum
 import random
 from typing import List, Tuple
+
+
+class Suite(Enum):
+    HEARTS = "HEARTS"
+    DIAMONDS = "DIAMONDS"
+    CLUBS = "CLUBS"
+    SPADES = "SPADES"
 
 
 class Card:
     """Represents a playing card with a suit and a rank."""
 
-    def __init__(self, suit: str, rank: str) -> None:
+    def __init__(self, suit: Suite, rank: str) -> None:
         self.suit = suit
         self.rank = rank
 
@@ -21,9 +25,9 @@ class Deck:
     """Represents a deck of playing cards."""
 
     def __init__(self) -> None:
-        suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
-        ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-        self._cards = [Card(suit, rank) for suit in suits for rank in ranks]
+        suits: list[Suite] = [Suite.HEARTS, Suite.CLUBS, Suite.DIAMONDS, Suite.SPADES]
+        ranks: list[str] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+        self._cards: list[Card] = [Card(suit, rank) for suit in suits for rank in ranks]
         random.shuffle(self._cards)
 
     def draw_card(self) -> Card:
@@ -35,9 +39,9 @@ class Blackjack:
     """Represents a game of Blackjack."""
 
     def __init__(self) -> None:
-        self._deck = Deck()
-        self.player_hand = []
-        self.dealer_hand = []
+        self._deck: Deck = Deck()
+        self.player_hand: list[Card] = []
+        self.dealer_hand: list[Card] = []
 
     def _deal_cards(self) -> None:
         """Deals two cards each to the player and the dealer."""
@@ -108,13 +112,3 @@ class Blackjack:
             f"Dealer's Hand: [{dealer_cards}] - Score: {dealer_score}\n"
             f"Player's Hand: [{player_cards}] - Score: {player_score}\n"
         )
-
-
-# Example of using the Blackjack class
-game = Blackjack()
-game.hit(game.player_hand)  # Player hits
-game.hit(game.player_hand)  # Player hits again
-print(game.display())  # Display the game state
-result, player_score, dealer_score = game.stand()  # Player stands
-print(game.display())  # Display final state
-print(f"Result: {result} - Player Score: {player_score} - Dealer Score: {dealer_score}")
