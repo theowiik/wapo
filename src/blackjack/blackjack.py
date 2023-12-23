@@ -13,12 +13,20 @@ class Suite(Enum):
 class Card:
     """Represents a playing card with a suit and a rank."""
 
+    RANKS: list[str] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+
     def __init__(self, suit: Suite, rank: str) -> None:
+        if suit not in [Suite.HEARTS, Suite.DIAMONDS, Suite.CLUBS, Suite.SPADES]:
+            raise ValueError("Invalid suit")
+
+        if rank not in self.RANKS:
+            raise ValueError("Invalid rank")
+
         self.suit = suit
         self.rank = rank
 
     def __repr__(self) -> str:
-        return f"{self.rank} of {self.suit}"
+        return f"{self.rank} of {self.suit.value.title()}"
 
 
 class Deck:
@@ -26,8 +34,10 @@ class Deck:
 
     def __init__(self) -> None:
         suits: list[Suite] = [Suite.HEARTS, Suite.CLUBS, Suite.DIAMONDS, Suite.SPADES]
-        ranks: list[str] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-        self._cards: list[Card] = [Card(suit, rank) for suit in suits for rank in ranks]
+        self._cards: list[Card] = [Card(suit, rank) for suit in suits for rank in Card.RANKS]
+        self.shuffle()
+
+    def shuffle(self):
         random.shuffle(self._cards)
 
     def draw_card(self) -> Card:

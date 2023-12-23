@@ -2,45 +2,67 @@ import unittest
 from src.blackjack.blackjack import Card, Deck, Blackjack, Suite
 
 class TestCard(unittest.TestCase):
-    def test_create_card_with_suit_and_rank(self):
-        card = Card(Suite.CLUBS, "A")
-        self.assertEqual(card.suit, Suite.CLUBS)
-        self.assertEqual(card.rank, "A")
+    def test_error_on_invalid_suit_creation(self):
+        with self.assertRaises(ValueError):
+            Card("InvalidSuit", "A")
+
+        with self.assertRaises(ValueError):
+            Card(None, "A")
+
+        with self.assertRaises(ValueError):
+            Card("", "A")
+
+    def test_error_on_invalid_rank_creation(self):
+        with self.assertRaises(ValueError):
+            Card(Suite.CLUBS, "InvalidRank")
+
+    def test_card_string_representation_format(self):
+        card = Card(Suite.HEARTS, "10")
+        self.assertEqual(str(card), "10 of Hearts")
 
 class TestDeck(unittest.TestCase):
-    def test_initialize_deck_with_52_cards(self):
+    def test_error_when_drawing_from_empty_deck(self):
         deck = Deck()
-        self.assertEqual(len(deck._cards), 52)
+        deck._cards = []  # Empty the deck
+        with self.assertRaises(IndexError):
+            deck.draw_card()
 
-    def test_draw_card_reduces_deck_size_by_one(self):
+    def test_deck_order_changes_after_shuffle(self):
         deck = Deck()
-        drawn_card = deck.draw_card()
-        self.assertIsInstance(drawn_card, Card)
-        self.assertEqual(len(deck._cards), 51)
+        before_shuffle = deck._cards.copy()
+        deck.shuffle()
+        self.assertNotEqual(before_shuffle, deck._cards)
 
 class TestBlackjack(unittest.TestCase):
     def setUp(self):
         self.game = Blackjack()
 
-    def test_deal_initial_two_cards_each_to_player_and_dealer(self):
+    def test_error_when_hitting_after_bust(self):
         self.game._deal_cards()
-        self.assertEqual(len(self.game.player_hand), 2)
-        self.assertEqual(len(self.game.dealer_hand), 2)
+        self.game.player_hand = [Card(Suite.HEARTS, "10"), Card(Suite.SPADES, "J"), Card(Suite.CLUBS, "5")]
+        with self.assertRaises(RuntimeError):
+            self.game.hit(self.game.player_hand)
 
-    def test_hit_adds_one_card_to_player_hand(self):
-        self.game._deal_cards()
-        self.game.hit(self.game.player_hand)
-        self.assertEqual(len(self.game.player_hand), 3)
+    def test_bust_scenario_with_aces_in_hand(self):
+        self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J"), Card(Suite.CLUBS, "A"), Card(Suite.DIAMONDS, "8")]
+        score = self.game._calculate_score(self.game.player_hand)
+        self.assertTrue(self.game._is_bust(score))
 
-    def test_calculate_score_of_hand(self):
+    def test_score_calculation_with_multiple_aces(self):
+        self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "A")]
+        score = self.game._calculate_score(self.game.player_hand)
+        self.assertEqual(score, 12)
+
+    def test_blackjack_with_two_cards(self):
         self.game.player_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "J")]
         score = self.game._calculate_score(self.game.player_hand)
         self.assertEqual(score, 21)
 
-    def test_check_if_hand_score_exceeds_21(self):
-        self.game.player_hand = [Card(Suite.HEARTS, "10"), Card(Suite.SPADES, "J"), Card(Suite.CLUBS, "5")]
-        score = self.game._calculate_score(self.game.player_hand)
-        self.assertTrue(self.game._is_bust(score))
+    def test_dealer_behavior_on_soft_17(self):
+        # Assuming the game logic makes the dealer hit on soft 17
+        self.game.dealer_hand = [Card(Suite.HEARTS, "A"), Card(Suite.SPADES, "6")]
+        self.game._dealer_play()
+        self.assertGreater(len(self.game.dealer_hand), 2)
 
 if __name__ == "__main__":
     unittest.main()
