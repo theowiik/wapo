@@ -1,21 +1,29 @@
-from blackjack.blackjack_core import Blackjack
+from blackjack.blackjack_core import Blackjack, GameState
 
 
 class BlackjackInterface:
-    def __init__(self):
+    """
+    One instance per game.
+    1 player vs dealer.
+    """
+
+    def __init__(self) -> None:
         self.game: Blackjack = Blackjack()
 
-    def deal_cards(self):
+    def deal_cards(self) -> None:
         self.game.deal_cards()
 
-    def player_hit(self):
+    def hit(self) -> None:
         self.game._hit_hand(self.game.player_hand)
 
-    def player_stand(self):
+    def stand(self) -> None:
         self.game.player_stand()
 
-    def display_game_state(self):
+    def display(self) -> str:
         return self.game.display()
 
-    def check_player_bust(self):
+    def check_player_bust(self) -> bool:
         return self.game.player_is_bust()
+
+    def get_state(self) -> GameState:
+        return self.game._game_state

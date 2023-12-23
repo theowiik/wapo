@@ -1,6 +1,6 @@
 from enum import Enum
 import random
-from typing import List, Tuple
+from typing import List
 from prettytable import PrettyTable
 
 
@@ -181,17 +181,12 @@ class Blackjack:
         player_score = self._calculate_score(self.player_hand)
 
         if player_score > 21:
-            # Player is bust
             self._game_state = GameState.DEALER_WON
         elif dealer_score > 21:
-            # Dealer is bust
             self._game_state = GameState.PLAYER_WON
         elif dealer_score > player_score:
-            # Dealer has higher score than player
             self._game_state = GameState.DEALER_WON
         elif dealer_score < player_score:
-            # Player has higher score than dealer
             self._game_state = GameState.PLAYER_WON
         else:
-            # Draw
             self._game_state = GameState.DRAW
