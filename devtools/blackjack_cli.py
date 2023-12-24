@@ -1,22 +1,28 @@
+import os
 import sys
 
 sys.path.append("..")
+
 from src.blackjack.blackjack import Blackjack
+
+
+def clear():
+    os.system("cls||clear")
 
 
 def play():
     blackjack: Blackjack = Blackjack()
     blackjack.deal_cards()
+    clear()
     print(blackjack.display())
-    print("\n\n\n")
 
     while True:
         choice = input("Hit or stand? (h/s): ").lower()
 
         if choice == "h":
             blackjack.hit()
+            clear()
             print(blackjack.display())
-            print("\n\n\n")
 
             if blackjack.is_bust():
                 break
@@ -28,8 +34,8 @@ def play():
         else:
             print("Invalid choice. Try again.")
 
+    clear()
     print(blackjack.display())
-    print("\n\n\n")
 
 
 if __name__ == "__main__":

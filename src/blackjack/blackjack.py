@@ -6,18 +6,23 @@ class Blackjack:
     """
     One instance per game. 1 player only.
 
-    Rules:
-        - Player is dealt 2 cards
-        - Dealer is dealt 1 card
-        - Player can hit or stand, no other options
-        - Once player stands, dealer plays
-        - Dealer stands on 17
+    House Rules:
+    - Player is dealt 2 cards
+    - Dealer is dealt 1 card
+    - Player can hit or stand, no other options
+    - Once player stands, dealer plays
+    - Dealer stands on 17
 
-        - Win conditions:
-            - Player gets 21
-            - Player gets higher than dealer
-            - Dealer goes bust
-            - Tie if both player and dealer have same score, including 21
+    Win conditions:
+    - Player wins if:
+        - Player's total is closer to 21 than the dealer's total.
+        - Dealer's total exceeds 21 (dealer busts) and the player does not bust.
+    - Dealer wins if:
+        - Dealer's total is closer to 21 than the player's total.
+        - Player's total exceeds 21 (player busts).
+    - It's a tie if:
+        - Both player and dealer have the same total.
+        - Both player and dealer hit 21.
     """
 
     def __init__(self) -> None:
