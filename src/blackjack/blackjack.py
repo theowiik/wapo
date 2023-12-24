@@ -1,4 +1,5 @@
-from blackjack_impl import BlackjackImpl, GameState
+from .blackjack_models import GameState
+from .blackjack_impl import BlackjackImpl
 
 
 class Blackjack:

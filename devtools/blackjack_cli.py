@@ -1,6 +1,7 @@
-from blackjack import Blackjack
+import sys
 
-# Simple CLI (controller-view) for playing blackjack
+sys.path.append("..")
+from src.blackjack.blackjack import Blackjack
 
 
 def play():

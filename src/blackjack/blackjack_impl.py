@@ -1,24 +1,18 @@
-from enum import Enum
 from typing import List
 from prettytable import PrettyTable
-from card import Card, CardRank, Deck
+from .blackjack_models import Card, CardRank, Deck, InvalidMove, GameState
 
-
-class InvalidMove(Exception):
-    pass
-
-
-class GameState(Enum):
-    IN_PROGRESS = "IN_PROGRESS"
-    PLAYER_WON = "PLAYER_WON"
-    DEALER_WON = "DEALER_WON"
-    DRAW = "DRAW"
+# ########################################
+# ||                                    ||
+# ||  dont use me :), use blackjack.py  ||
+# ||                                    ||
+# ########################################
 
 
 class BlackjackImpl:
     """
     Jackblack game implementation.
-    Favor use of the BlackjackWrapper class instead of this one.
+    Favor use of the Blackjack wrapper class instead of this one.
     """
 
     _has_dealt_cards: bool = False

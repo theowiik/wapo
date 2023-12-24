@@ -2,6 +2,17 @@ from enum import Enum
 import random
 
 
+class InvalidMove(Exception):
+    pass
+
+
+class GameState(Enum):
+    IN_PROGRESS = "IN_PROGRESS"
+    PLAYER_WON = "PLAYER_WON"
+    DEALER_WON = "DEALER_WON"
+    DRAW = "DRAW"
+
+
 class Suite(Enum):
     HEARTS = "HEARTS"
     DIAMONDS = "DIAMONDS"
