@@ -1,4 +1,6 @@
-from blackjack_core import Blackjack
+from blackjack import Blackjack
+
+# Simple CLI (controller-view) for playing blackjack
 
 
 def play():
@@ -11,15 +13,15 @@ def play():
         choice = input("Hit or stand? (h/s): ").lower()
 
         if choice == "h":
-            blackjack.player_hit()
+            blackjack.hit()
             print(blackjack.display())
             print("\n\n\n")
 
-            if blackjack.player_is_bust():
+            if blackjack.is_bust():
                 break
 
         elif choice == "s":
-            blackjack.player_stand()
+            blackjack.stand()
             break
 
         else:

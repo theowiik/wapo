@@ -15,8 +15,11 @@ class GameState(Enum):
     DRAW = "DRAW"
 
 
-class Blackjack:
-    """Represents a game of Blackjack."""
+class BlackjackImpl:
+    """
+    Jackblack game implementation.
+    Favor use of the BlackjackWrapper class instead of this one.
+    """
 
     _has_dealt_cards: bool = False
     _game_state: GameState = GameState.IN_PROGRESS
@@ -36,9 +39,9 @@ class Blackjack:
 
         self._has_dealt_cards = True
 
-        for _ in range(2):
-            self.player_hand.append(self._deck.draw_card())
-            self.dealer_hand.append(self._deck.draw_card())
+        self.player_hand.append(self._deck.draw_card())
+        self.dealer_hand.append(self._deck.draw_card())
+        self.player_hand.append(self._deck.draw_card())
 
     def player_stand(self) -> None:
         """Player decides to stand, finishing their turn and the dealer plays its turn."""
