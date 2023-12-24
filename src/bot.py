@@ -4,16 +4,17 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from token_api import TokenAPI
+from managers import TokenManager, CrosswordManager
 from cogs.crossword import CrosswordCog
-from cogs.tokens import TokenCog
-from const import GITHUB_REPOSITORY, GITHUB_ICON
+from cogs.gamble import GambleCog
+from cogs.token import TokenCog
 
 
 class WaPoBot(commands.Bot):
     def __init__(self, command_prefix, intents):
         super().__init__(command_prefix=command_prefix, intents=intents)
-        self.token_api = TokenAPI("data/tokens.json")
+        self.token_manager = TokenManager("data/tokens.json")
+        self.crossword_manager = CrosswordManager("data/crosswords.json")
 
     async def on_ready(self):
         print(f"{self.user} has connected!")
@@ -28,12 +29,13 @@ class WaPoBot(commands.Bot):
 
 
 class WaPoHelp(commands.HelpCommand):
+    """
+    Helper class that prints a better !help command
+    """
+
     def get_command_signature(self, command):
-        return "%s%s %s" % (
-            self.context.clean_prefix,
-            command.qualified_name,
-            command.signature,
-        )
+        return (f"{self.context.clean_prefix}{command.qualified_name} "
+                f"{command.signature}")
 
     async def send_bot_help(self, mapping):
         embed = discord.Embed(title="Help", color=discord.Color.blurple())
@@ -59,8 +61,9 @@ async def main():
 
     bot = WaPoBot(command_prefix="!", intents=intents)
     bot.help_command = WaPoHelp()
-    await bot.add_cog(TokenCog(bot))
     await bot.add_cog(CrosswordCog(bot))
+    await bot.add_cog(GambleCog(bot))
+    await bot.add_cog(TokenCog(bot))
     await bot.start(os.getenv("DISCORD_TOKEN"))
 
 

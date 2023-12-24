@@ -19,7 +19,7 @@ def _get_driver():
     return webdriver.Firefox(options=options, service=service)
 
 
-def get_wapo_url(day: str = None):
+def get_wapo_url(day: str = None) -> str:
     """
     Retrieves the URL of the latest Washington Post crossword puzzle.
 
@@ -111,8 +111,8 @@ def is_complete(url: str) -> bool:
         )
         return modal_title.text == "Congratulations!"
 
-    except Exception as e:
-        print(f"Unable to check puzzle complete: {e}")
+    except Exception as error:
+        print(f"Unable to check puzzle complete: {error}")
         return False
 
     finally:

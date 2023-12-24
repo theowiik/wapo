@@ -17,7 +17,7 @@
     - [X] Make sure you cant gamble more than you have
     - [X] Reward the ID that !gamble'd
     - [X] Print the gamblers name
-    - [ ] Make sure winnings are correct (shared 2nd place should give 1.5x)
+    - [X] Make sure winnings are correct (shared 2nd place should give 1.5x)
 - [X] Create token api for managing tokens
 - [X] Reward all players with tokens when crossword complete
 - [X] Cooldown on commands
@@ -27,12 +27,36 @@
 - [X] !send command
 - [X] Dont allow negative tokens in give and send
 - [X] Command not found message
-- [ ] Print winner number in gambling message
-- [ ] Move cogs to separate files
-- [ ] Fix channel id check
-- [ ] Fix typing
-- [ ] Logging
-- [ ] Testing
+- [X] Print winner number in gambling message
+- [X] Move cogs to separate files
+- [X] Add typing
+- [X] Add tests
+- [X] Create gambling cog
+- [X] Save completed crosswords to JSON
+- [ ] Add !blackjack command
+    - [ ] Add it to GambleCog
+- [ ] Add !profile command
+- [ ] Add a store
+    - [ ] Create a JSON file with store contents
+        - [ ] Map an id to an object, that has a price, name, description etc
+        - [ ] List store items with !store
+        - [ ] Items
+            - [ ] Profile avatars
+            - [ ] Gamble powerups
+            - [ ] Wapo powerups
+    - [ ] Buy store items with !buy "id"
+    - [ ] Add player manager
+        - [ ] Map player id to their inventory
+        - [ ] Inventory has nr of tokens and items
+        - [ ] Re-do token manager to be this
+- [ ] Add events
+    - [ ] Raffle event
+        - [ ] Occurs randomly once every 24 hours
+        - [ ] Event lasts 5 minutes
+        - [ ] Buy an entry for X tokens
+        - [ ] Raffle a random winner
+- [ ] Fix channel id check for all commands, should only be in \#wapo channel
+- [ ] Add logging
 - [ ] Get a certain day of the week's puzzle (e.g. !wapo tuesday)
 - [ ] Update Google Sheets with time automatically
 - [ ] Remote hosting

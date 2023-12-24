@@ -5,6 +5,7 @@ __pycache__
 
 # Data
 data/
+test/data/
 
 # JetBrains
 .idea/
